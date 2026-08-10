@@ -14,3 +14,6 @@ Thumbs.db
 
 # temp
 *.tmp
+
+# Local submission documents
+*申报书.md
