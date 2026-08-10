@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "pei0331/moon-wit/cmd/moon-wit"
+
+// Values
+pub fn read_file(String) -> String?
+
+pub fn write_file(String, String) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,39 @@
+package example:greeting@0.1.0;
+
+interface types {
+  record person {
+    name: string
+    age: u32
+    email: string
+  }
+  enum tone {
+    formal
+    casual
+  }
+  variant animal {
+    dog
+    bird(string)
+    fish
+  }
+  flags permissions {
+    read
+    write
+    execute
+  }
+  resource session;
+  type id = u64;
+  list-people: func(limit: u32) -> list<person>
+  make-greeting: func(name: string, t: tone) -> string
+  add-person: func(p: person) -> result<u64, string>
+  find: func(key: string) -> option<string>
+  mix: func(a: u8, b: s8) -> tuple<u32, bool>
+  talk: func(s: borrow<session>) -> string
+}
+
+world greeting-world {
+  use types.{person, tone};
+  import types;
+  export run: interface {
+    run: func() -> string
+  }
+}

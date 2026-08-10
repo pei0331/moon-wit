@@ -1,0 +1,16 @@
+# MoonBit build artifacts
+_build/
+
+# IDE / editor
+.idea/
+.vscode/
+
+# Claude Code local settings
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# temp
+*.tmp
