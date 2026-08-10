@@ -4,7 +4,7 @@ version = "0.1.0"
 
 readme = "README.mbt.md"
 
-repository = "https://github.com/pei0331/moonbit-toml"
+repository = "https://github.com/pei0331/moon-wit"
 
 license = "Apache-2.0"
 

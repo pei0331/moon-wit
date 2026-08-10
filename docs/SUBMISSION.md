@@ -2,7 +2,7 @@
 
 **A Wasm Component Model interface binding generator for MoonBit.**
 
-- GitHub repository: <https://github.com/pei0331/moonbit-toml> (project renamed in-place to `moon-wit`)
+- GitHub repository: <https://github.com/pei0331/moon-wit>
 - Author: pei0331
 
 ## 1. Abstract

@@ -3,7 +3,7 @@
 ## 1. 项目名称与仓库地址
 
 - 项目名称：moon-wit（MoonBit WIT Bindgen）
-- GitHub 仓库：https://github.com/pei0331/moonbit-toml（原 moonbit_toml 仓库已清空重写为 moon-wit 项目）
+- GitHub 仓库：https://github.com/pei0331/moon-wit
 - 参赛者：pei0331　联系方式：18115151290
 
 ## 2. 项目简介
