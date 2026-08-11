@@ -234,6 +234,18 @@ fn join_strings(items : Array[String], sep : String) -> String {
 }
 
 ///|
+fn indent_lines(text : String, prefix : String) -> String {
+  let mut s = prefix
+  for ch in text {
+    s = s + ch.to_string()
+    if ch == '\n' {
+      s = s + prefix
+    }
+  }
+  s
+}
+
+///|
 pub fn Field::to_string(self : Field) -> String {
   "\{self.name}: \{self.ty.to_string()}"
 }
@@ -345,7 +357,7 @@ pub fn InterfaceItem::to_string(self : InterfaceItem) -> String {
 pub fn Interface::to_string(self : Interface) -> String {
   let mut s = "interface \{self.name} {\n"
   for item in self.items {
-    s = s + "  \{item.to_string()}\n"
+    s = s + indent_lines(item.to_string(), "  ") + "\n"
   }
   s + "}"
 }
@@ -361,11 +373,11 @@ pub fn ImpExp::to_string(self : ImpExp) -> String {
     Some(iface) => {
       s = s + ": interface {\n"
       for item in iface.items {
-        s = s + "  \{item.to_string()}\n"
+        s = s + indent_lines(item.to_string(), "  ") + "\n"
       }
       s = s + "}"
     }
-    None => ()
+    None => s = s + ";"
   }
   s
 }
@@ -383,7 +395,7 @@ pub fn WorldItem::to_string(self : WorldItem) -> String {
 pub fn World::to_string(self : World) -> String {
   let mut s = "world \{self.name} {\n"
   for item in self.items {
-    s = s + "  \{item.to_string()}\n"
+    s = s + indent_lines(item.to_string(), "  ") + "\n"
   }
   s + "}"
 }

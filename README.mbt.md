@@ -1,8 +1,9 @@
 # pei0331/moon-wit
 
-A Wasm Component Model interface binding generator for MoonBit. Parses a
-WIT 1.0 core subset and generates type-safe MoonBit import/export bindings.
-Design inspired by `bytecodealliance/wit-bindgen`.
+A WIT core-subset parser and MoonBit API scaffold generator. It emits typed
+declarations and compiling function stubs. Version 0.1.0 does not yet implement
+the Component Model Canonical ABI, so the generated functions are not callable
+Wasm import/export bindings. Design inspired by `bytecodealliance/wit-bindgen`.
 
 ## Usage
 

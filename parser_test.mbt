@@ -140,6 +140,29 @@ test "parse hello-world world" {
 }
 
 ///|
+test "rendered WIT parses again" {
+  let rendered = parse_or_fail(hello_world_wit).to_string()
+  let reparsed = parse_or_fail(rendered)
+  assert_eq(reparsed.to_string(), rendered)
+  assert_eq(contains_test_str(rendered, "import greet;"), true)
+  assert_eq(contains_test_str(rendered, "\n    run: func()"), true)
+}
+
+///|
+fn contains_test_str(haystack : String, needle : String) -> Bool {
+  let needle_len = needle.length()
+  if needle_len == 0 {
+    return true
+  }
+  for i in 0..<(haystack.length() - needle_len + 1) {
+    if haystack[i:i + needle_len].equal_to_string(needle) {
+      return true
+    }
+  }
+  false
+}
+
+///|
 test "parse greeting package version" {
   let p = parse_or_fail(greeting_wit)
   assert_eq(p.ns, "example")
@@ -171,6 +194,65 @@ test "parse greeting typedefs" {
       )
       assert_eq(iface.items[4].to_string(), "resource session;")
       assert_eq(iface.items[5].to_string(), "type id = u64;")
+    }
+    _ => abort("expected interface")
+  }
+}
+
+///|
+test "parse comma-separated type members" {
+  let src =
+    #|package test:commas;
+    #|interface types {
+    #|  record point { x: f32, y: f32, }
+    #|  variant value { none, text(string), }
+    #|  enum color { red, green, blue, }
+    #|  flags access { read, write, }
+    #|}
+  let p = parse_or_fail(src)
+  match p.items[0] {
+    Interface(iface) => {
+      assert_eq(iface.items.length(), 4)
+      assert_eq(
+        iface.items[0].to_string(),
+        "record point {\n  x: f32\n  y: f32\n}",
+      )
+      assert_eq(
+        iface.items[1].to_string(),
+        "variant value {\n  none\n  text(string)\n}",
+      )
+      assert_eq(
+        iface.items[2].to_string(),
+        "enum color {\n  red\n  green\n  blue\n}",
+      )
+      assert_eq(
+        iface.items[3].to_string(),
+        "flags access {\n  read\n  write\n}",
+      )
+    }
+    _ => abort("expected interface")
+  }
+}
+
+///|
+test "parse functions with optional semicolons" {
+  let src =
+    #|package test:functions;
+    #|interface api {
+    #|  ping: func();
+    #|  lookup: func(key: string) -> option<string>;
+    #|  legacy: func()
+    #|}
+  let p = parse_or_fail(src)
+  match p.items[0] {
+    Interface(iface) => {
+      assert_eq(iface.items.length(), 3)
+      assert_eq(iface.items[0].to_string(), "ping: func()")
+      assert_eq(
+        iface.items[1].to_string(),
+        "lookup: func(key: string) -> option<string>",
+      )
+      assert_eq(iface.items[2].to_string(), "legacy: func()")
     }
     _ => abort("expected interface")
   }

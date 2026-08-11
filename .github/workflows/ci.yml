@@ -4,9 +4,13 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   check-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -33,3 +37,14 @@ jobs:
 
       - name: Build (CLI + generated examples)
         run: moon build
+
+      - name: Verify release package
+        run: moon package --list
+
+      - name: Check generated example is current
+        run: git diff --exit-code -- examples/hello
+
+      - name: Check generated package interfaces are current
+        run: |
+          moon info
+          git diff --exit-code -- '*.mbti'

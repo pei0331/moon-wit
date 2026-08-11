@@ -29,6 +29,7 @@ test "generate hello-world bindings" {
   // world import + inline export interface
   assert_eq(contains_str(out, "// import greet"), true)
   assert_eq(contains_str(out, "pub fn run() -> String"), true)
+  assert_eq(out[out.length() - 2:], "}\n")
 }
 
 ///|
@@ -84,6 +85,8 @@ test "generate greeting funcs" {
     true,
   )
   assert_eq(contains_str(out, "pub fn talk(s : Session) -> String"), true)
+  assert_eq(contains_str(out, "  ignore(limit)"), true)
+  assert_eq(contains_str(out, "  ignore(name)"), true)
 }
 
 ///|
@@ -114,7 +117,7 @@ test "generate_moon_pkg content" {
     generate_moon_pkg(true),
     "import {\n  \"moonbitlang/core/list\",\n}\n",
   )
-  assert_eq(generate_moon_pkg(false), "")
+  assert_eq(generate_moon_pkg(false), "\n")
 }
 
 ///|

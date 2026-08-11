@@ -3,6 +3,7 @@
 
 ///|
 pub fn greet(name : String) -> String {
+  ignore(name)
   abort("stub: greet")
 }
 

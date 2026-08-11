@@ -29,16 +29,16 @@ use        ::= 'use' path '.' '{' name ['as' name] (',' name ['as' name])* '}' '
 path       ::= ident (':' ident)? ('/' ident)*      -- e.g. `wasi:io/streams`
 
 type-def   ::= record | variant | enum | flags | resource | type-alias
-record     ::= 'record' name '{' field+ '}'
+record     ::= 'record' name '{' (field [','])+ '}'
 field      ::= ident ':' type
-variant    ::= 'variant' name '{' case+ '}'
+variant    ::= 'variant' name '{' (case [','])+ '}'
 case       ::= ident ['(' type ')']
-enum       ::= 'enum' name '{' ident+ '}'
-flags      ::= 'flags' name '{' ident+ '}'
+enum       ::= 'enum' name '{' (ident [','])+ '}'
+flags      ::= 'flags' name '{' (ident [','])+ '}'
 resource   ::= 'resource' name ';'
 type-alias ::= 'type' name '=' type ';'
 
-func       ::= ident ':' 'func' '(' [param (',' param)*] ')' ['->' results]
+func       ::= ident ':' 'func' '(' [param (',' param)*] ')' ['->' results] [';']
 param      ::= ident ':' type
 results    ::= type
              | '(' [result (',' result)*] ')'
@@ -96,9 +96,9 @@ carry precise 1-based `line:column` positions.
 | `type id = u64;` | `pub typealias Id = UInt64` |
 | `greet: func(name: string) -> string` | `pub fn greet(name : String) -> String { abort("stub: greet") }` |
 
-Function bodies are emitted as `abort("stub: <name>")` stubs so generated
-packages always compile; bindings are filled in once the actual
-import/export plumbing exists.
+Function bodies consume their parameters and call `abort("stub: <name>")` so
+generated packages compile without unused-parameter warnings. Canonical ABI
+import/export plumbing is not implemented in version 0.1.0.
 
 Results map as follows:
 
@@ -125,5 +125,6 @@ Currently unsupported (documented limitations):
 - multi-file package imports
 - named-result structs (multiple named results flatten to a tuple)
 - bit-packed `flags` (generated as `Bool` fields)
+- Component Model Canonical ABI lowering/lifting and callable bindings
 
 These are targeted for later phases.

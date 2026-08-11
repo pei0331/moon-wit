@@ -53,6 +53,7 @@ moon test
 5. `moon info` — regenerate the package interface; commit the `.mbti` diff.
 6. If you changed the grammar or the type mapping, update `docs/GRAMMAR.md`
    and `README.md`.
+7. `moon package --list` — inspect the exact mooncakes.io release contents.
 
 ## License
 

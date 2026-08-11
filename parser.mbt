@@ -349,6 +349,9 @@ fn Parser::parse_record(self : Parser) -> TypeDef raise WitError {
     self.expect_punct(Colon, "':'")
     let ty = self.parse_type()
     fields.push({ name: fname, ty })
+    if self.peek(0).kind == Comma {
+      self.advance()
+    }
   }
   self.expect_punct(RBrace, "'}'")
   { name, kind: Record(fields) }
@@ -371,6 +374,9 @@ fn Parser::parse_variant(self : Parser) -> TypeDef raise WitError {
       None
     }
     cases.push({ name: cname, ty })
+    if self.peek(0).kind == Comma {
+      self.advance()
+    }
   }
   self.expect_punct(RBrace, "'}'")
   { name, kind: Variant(cases) }
@@ -381,6 +387,9 @@ fn Parser::parse_name_list(self : Parser) -> Array[String] raise WitError {
   let names : Array[String] = Array::new()
   while self.peek(0).kind != RBrace {
     names.push(self.expect_ident())
+    if self.peek(0).kind == Comma {
+      self.advance()
+    }
   }
   names
 }
@@ -437,6 +446,9 @@ fn Parser::parse_func(self : Parser) -> FuncSig raise WitError {
     self.parse_results()
   } else {
     Array::new()
+  }
+  if self.peek(0).kind == Semi {
+    self.advance()
   }
   { name, params, results }
 }

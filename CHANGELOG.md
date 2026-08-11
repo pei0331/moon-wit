@@ -4,8 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## [0.1.0] - 2026-08-11
 
-Initial release. `moon-wit` — a Wasm Component Model interface binding
-generator for MoonBit.
+Initial release. `moon-wit` — a WIT core-subset parser and MoonBit API
+scaffold generator.
 
 ### Added
 
@@ -23,8 +23,10 @@ generator for MoonBit.
   detection.
 - `moon-wit` CLI (`cmd/moon-wit`): `parse` / `gen` / `version` / `help`
   subcommands with native file I/O.
-- 26 tests covering the lexer, parser (AST shape and exact error positions)
-  and codegen (generated declarations, type mapping, list-import detection).
+- Automated tests covering the lexer, parser (AST shape and exact error
+  positions) and codegen (generated declarations, type mapping and list-import
+  detection), including comma-separated WIT members, optional function
+  semicolons and parse/render round trips.
 - `tests/hello-world.wit` and `tests/greeting.wit` fixtures; checked-in
   `examples/hello` generated bindings verified by CI via `moon build`.
 - Docs: README, `docs/GRAMMAR.md`, `docs/SUBMISSION.md`.

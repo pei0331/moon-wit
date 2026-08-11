@@ -1,13 +1,15 @@
 # moon-wit
 
-A **Wasm Component Model interface binding generator** for
+A **WIT core-subset parser and MoonBit API scaffold generator** for
 [MoonBit](https://www.moonbitlang.com). `moon-wit` reads a
 [WIT 1.0](https://github.com/WebAssembly/component-model/blob/main/design/mvp/WIT.md)
-document and generates type-safe MoonBit import/export bindings.
+document and generates typed MoonBit declarations and function stubs.
 
-This is the interoperability layer for Wasm Components in MoonBit: feed it a
-`.wit` file and it emits a MoonBit package that compiles with `moon build` out
-of the box. Design inspired by `bytecodealliance/wit-bindgen`.
+The generated package compiles with `moon build` out of the box, making it
+useful for validating WIT files and starting a MoonBit-facing API. Version
+0.1.0 does **not** implement the Component Model Canonical ABI, so generated
+functions are compile-time scaffolds rather than callable Wasm bindings.
+Design inspired by `bytecodealliance/wit-bindgen`.
 
 ## Quick start
 
@@ -30,6 +32,7 @@ Generated `bindings.mbt` for `tests/hello-world.wit`:
 ```moonbit
 ///|
 pub fn greet(name : String) -> String {
+  ignore(name)
   abort("stub: greet")
 }
 
@@ -41,9 +44,9 @@ pub fn run() -> String {
 }
 ```
 
-Function bodies are emitted as `abort("stub: <name>")` placeholders so the
-generated package always compiles; they are filled in once the actual
-component plumbing exists.
+Function bodies consume their parameters and then call `abort("stub: <name>")`
+so the generated package compiles without unused-parameter warnings. Canonical
+ABI import/export plumbing is tracked as future work.
 
 ## CLI
 
@@ -92,9 +95,26 @@ The full grammar and type-mapping tables are in
 ```bash
 moon fmt --check   # formatting
 moon check         # type-check
-moon test          # 26 tests (lexer / parser / codegen)
+moon test          # lexer / parser / codegen tests
 moon build         # build CLI and the generated examples/hello
 ```
+
+CI also regenerates the checked-in example and package interfaces, then fails
+if either differs from the committed files.
+
+## Release
+
+Inspect the mooncakes.io package contents before publishing:
+
+```bash
+moon package --list
+moon login
+moon publish
+```
+
+`moon publish` requires the package owner's mooncakes.io credentials and is
+therefore a manual release step. Create or move a version tag only after the
+published package has been verified.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/SUBMISSION.md](docs/SUBMISSION.md).
 
