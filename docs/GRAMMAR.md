@@ -58,7 +58,8 @@ primitive  ::= 'u8' | 'u16' | 'u32' | 'u64'
 ```
 
 Comments (`//`, `/* */`, `///`) and whitespace are skipped anywhere. Errors
-carry precise 1-based `line:column` positions.
+carry precise 1-based `line:column` positions. WIT escaped identifiers retain
+their leading `%` in the AST and rendered WIT.
 
 ## WIT → MoonBit type mapping
 
@@ -93,7 +94,7 @@ carry precise 1-based `line:column` positions.
 | `enum tone { formal, casual }` | `pub enum Tone { Formal, Casual }` |
 | `flags permissions { read, … }` | `pub struct Permissions { read : Bool, … }` (P0 placeholder) |
 | `resource session;` | `#external type Session` (opaque) |
-| `type id = u64;` | `pub typealias Id = UInt64` |
+| `type id = u64;` | `pub type Id = UInt64` |
 | `greet: func(name: string) -> string` | `pub fn greet(name : String) -> String { abort("stub: greet") }` |
 
 Function bodies consume their parameters and call `abort("stub: <name>")` so
@@ -115,6 +116,10 @@ MoonBit:
 | --- | --- | --- |
 | type names, enum cases | kebab-case → PascalCase | `hello-world` → `HelloWorld` |
 | fields, functions, params | kebab-case → snake_case | `first-name` → `first_name` |
+
+The `%` prefix is removed only during MoonBit code generation. If the result is
+a MoonBit keyword, an underscore is appended: `%type` → `type_` and `%match` →
+`match_`.
 
 ## P0 scope
 

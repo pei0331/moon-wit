@@ -1,0 +1,6 @@
+package test:escaped;
+
+interface %interface {
+  type %type = string;
+  %type: func(%match: string) -> %type;
+}

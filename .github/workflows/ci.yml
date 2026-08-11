@@ -33,7 +33,9 @@ jobs:
         run: moon run cmd/moon-wit -- parse tests/hello-world.wit
 
       - name: CLI smoke test (gen)
-        run: moon run cmd/moon-wit -- gen tests/hello-world.wit -o examples/hello
+        run: |
+          moon run cmd/moon-wit -- gen tests/hello-world.wit -o examples/hello
+          moon run cmd/moon-wit -- gen tests/escaped-identifiers.wit -o examples/escaped
 
       - name: Build (CLI + generated examples)
         run: moon build
@@ -42,7 +44,7 @@ jobs:
         run: moon package --list
 
       - name: Check generated example is current
-        run: git diff --exit-code -- examples/hello
+        run: git diff --exit-code -- examples
 
       - name: Check generated package interfaces are current
         run: |

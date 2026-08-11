@@ -149,6 +149,19 @@ test "rendered WIT parses again" {
 }
 
 ///|
+test "parse and render escaped identifiers" {
+  let src =
+    #|package test:escaped;
+    #|interface %interface {
+    #|  %type: func(%match: string) -> string;
+    #|}
+  let rendered = parse_or_fail(src).to_string()
+  assert_eq(contains_test_str(rendered, "interface %interface"), true)
+  assert_eq(contains_test_str(rendered, "%type: func(%match: string)"), true)
+  assert_eq(parse_or_fail(rendered).to_string(), rendered)
+}
+
+///|
 fn contains_test_str(haystack : String, needle : String) -> Bool {
   let needle_len = needle.length()
   if needle_len == 0 {

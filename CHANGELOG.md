@@ -10,7 +10,7 @@ scaffold generator.
 ### Added
 
 - WIT 1.0 core-subset lexer with 1-based line/column positions, comments and
-  `@version` tokens.
+  `@version` tokens, including `%escaped-identifier` support.
 - Recursive-descent parser: `package`, `interface`, `world`, `use`,
   `import`/`export` (named and inline-interface), `record`/`variant`/`enum`/
   `flags`/`resource`/`type` aliases, and `func` signatures including named and
@@ -18,7 +18,7 @@ scaffold generator.
 - Full AST (`ast.mbt`) with a WIT round-trip renderer.
 - Code generator (`codegen.mbt`): `record`→`struct`, `variant`→payload `enum`,
   `enum`→unit `enum`, `flags`→`Bool`-field `struct`, `resource`→`#external
-  type`, alias→`typealias`, `func`→typed `pub fn` stub; full WIT→MoonBit type
+  type`, alias→`type`, `func`→typed `pub fn` stub; full WIT→MoonBit type
   mapping (see `docs/GRAMMAR.md`); automatic `moonbitlang/core/list` import
   detection.
 - `moon-wit` CLI (`cmd/moon-wit`): `parse` / `gen` / `version` / `help`

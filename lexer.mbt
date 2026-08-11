@@ -6,6 +6,7 @@
 ///|
 pub enum TokenKind {
   /// An identifier, or a keyword (resolved by the parser).
+  /// WIT escaped identifiers retain their leading `%`.
   Ident(String)
   /// A semver version string following `@`, e.g. `0.1.0`.
   Version(String)
@@ -296,6 +297,23 @@ pub fn tokenize(src : String) -> Array[Token] raise WitError {
             push_punct(tokens, Arrow, start_line, start_col)
           }
           _ => raise WitError::make(lx.line, lx.col, "unexpected character '-'")
+        }
+      }
+      Some('%') => {
+        lx.advance()
+        match lx.peek_char(0) {
+          Some(ch) if is_ident_start(ch) => {
+            let text = lx.lex_ident()
+            tokens.push({
+              kind: Ident("%" + text),
+              line: start_line,
+              col: start_col,
+            })
+          }
+          _ =>
+            raise WitError::make(
+              start_line, start_col, "expected identifier after '%'",
+            )
         }
       }
       Some(ch) if is_ident_start(ch) => {

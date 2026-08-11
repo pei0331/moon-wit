@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "pei0331/moon-wit/examples/escaped"
+
+// Values
+pub fn type_(String) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub type Type = String
+
+// Traits

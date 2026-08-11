@@ -22,8 +22,9 @@ let moon_pkg = @moon_wit.generate_moon_pkg(
 )
 ```
 
-`examples/hello/bindings.mbt` is the checked-in output of the CLI for
-`tests/hello-world.wit` and is compiled by CI.
+`examples/hello` and `examples/escaped` are checked-in CLI outputs compiled by
+CI. The escaped-identifier example verifies that WIT names such as `%type` and
+`%match` become legal MoonBit identifiers (`type_` and `match_`).
 
 ## Public API
 

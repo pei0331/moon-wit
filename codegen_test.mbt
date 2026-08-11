@@ -58,7 +58,7 @@ test "generate greeting typedefs" {
   assert_eq(contains_str(out, "#external"), true)
   assert_eq(contains_str(out, "type Session"), true)
   // alias
-  assert_eq(contains_str(out, "pub typealias Id = UInt64"), true)
+  assert_eq(contains_str(out, "pub type Id = UInt64"), true)
 }
 
 ///|
@@ -127,6 +127,21 @@ test "naming helpers" {
   assert_eq(case_name("not-animal"), "NotAnimal")
   assert_eq(field_name("hello-world"), "hello_world")
   assert_eq(field_name("limit"), "limit")
+  assert_eq(type_name("%interface"), "Interface")
+  assert_eq(field_name("%type"), "type_")
+  assert_eq(field_name("%match"), "match_")
+}
+
+///|
+test "generate escaped identifiers as valid MoonBit names" {
+  let src =
+    #|package test:escaped;
+    #|interface %interface {
+    #|  %type: func(%match: string) -> string;
+    #|}
+  let out = generate(parse_or_fail(src))
+  assert_eq(contains_str(out, "pub fn type_(match_ : String) -> String"), true)
+  assert_eq(contains_str(out, "ignore(match_)"), true)
 }
 
 ///|

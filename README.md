@@ -61,7 +61,9 @@ ABI import/export plumbing is tracked as future work.
 
 `record` → `struct`, `variant` → payload `enum`, `enum` → unit `enum`,
 `flags` → `Bool`-field `struct`, `resource` → `#external type`,
-`type` alias → `typealias`, and every `func` → a typed `pub fn` stub.
+`type` alias → MoonBit `type`, and every `func` → a typed `pub fn` stub.
+WIT escaped identifiers such as `%type` are converted to legal MoonBit names
+such as `type_` when they conflict with MoonBit keywords.
 
 ```wit
 record person { name: string, age: u32 }

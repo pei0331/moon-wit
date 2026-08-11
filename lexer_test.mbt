@@ -60,3 +60,23 @@ test "lex punctuation set" {
   }
   assert_eq(joined, "( ) { } < > : = . , / eof")
 }
+
+///|
+test "lex escaped identifiers" {
+  let toks = tokenize("%type %hello-world")
+  assert_eq(toks[0].to_string(), "ident(%type)")
+  assert_eq(toks[1].to_string(), "ident(%hello-world)")
+  assert_eq(toks[0].line, 1)
+  assert_eq(toks[0].col, 1)
+}
+
+///|
+test "lex error: percent must escape an identifier" {
+  let msg = try {
+    ignore(tokenize("%"))
+    ""
+  } catch {
+    e => e.to_string()
+  }
+  assert_eq(msg, "1:1: expected identifier after '%'")
+}

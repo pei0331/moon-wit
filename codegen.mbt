@@ -3,7 +3,7 @@
 ///
 /// Maps WIT types and definitions to idiomatic MoonBit:
 /// record→struct, enum→unit enum, variant→payload enum, flags→Bool struct,
-/// resource→`#external` opaque type, type alias→`typealias`,
+/// resource→`#external` opaque type, type alias→`type`,
 /// func→a `pub fn` stub that aborts. Functions whose bodies are not yet bound
 /// are emitted as stubs so the generated package always compiles.
 /// Design inspired by bytecodealliance/wit-bindgen.
@@ -138,7 +138,7 @@ fn generate_typedef(def : TypeDef) -> String {
       out + "}\n"
     }
     Resource => "///|\n#external\ntype \{tn}\n"
-    Alias(t) => "///|\npub typealias \{tn} = \{type_str(t)}\n"
+    Alias(t) => "///|\npub type \{tn} = \{type_str(t)}\n"
   }
 }
 
@@ -233,7 +233,54 @@ pub fn case_name(name : String) -> String {
 ///|
 /// `first-name` → `first_name` (MoonBit field/function naming).
 pub fn field_name(name : String) -> String {
-  kebab_to_snake(name)
+  let ident = kebab_to_snake(name)
+  if is_moonbit_keyword(ident) {
+    ident + "_"
+  } else {
+    ident
+  }
+}
+
+///|
+fn is_moonbit_keyword(name : String) -> Bool {
+  match name {
+    "_"
+    | "as"
+    | "async"
+    | "break"
+    | "catch"
+    | "const"
+    | "continue"
+    | "derive"
+    | "else"
+    | "enum"
+    | "extern"
+    | "fn"
+    | "for"
+    | "guard"
+    | "if"
+    | "impl"
+    | "in"
+    | "is"
+    | "let"
+    | "loop"
+    | "match"
+    | "mut"
+    | "priv"
+    | "pub"
+    | "raise"
+    | "return"
+    | "struct"
+    | "test"
+    | "trait"
+    | "try"
+    | "type"
+    | "typealias"
+    | "while"
+    | "with"
+    | "yield" => true
+    _ => false
+  }
 }
 
 ///|
@@ -241,7 +288,9 @@ fn kebab_to_pascal(s : String) -> String {
   let mut out = ""
   let mut cap_next = true
   for ch in s {
-    if ch == '-' || ch == '_' {
+    if ch == '%' {
+      continue
+    } else if ch == '-' || ch == '_' {
       cap_next = true
     } else if cap_next {
       out = out + upcase_char(ch).to_string()
@@ -257,7 +306,9 @@ fn kebab_to_pascal(s : String) -> String {
 fn kebab_to_snake(s : String) -> String {
   let mut out = ""
   for ch in s {
-    if ch == '-' {
+    if ch == '%' {
+      continue
+    } else if ch == '-' {
       out = out + "_"
     } else {
       out = out + ch.to_string()
