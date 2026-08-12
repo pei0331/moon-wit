@@ -254,6 +254,17 @@ fn Parser::parse_include(
         path = path + "/"
         self.advance()
       }
+      At => {
+        path = path + "@"
+        self.advance()
+        match self.peek(0).kind {
+          Version(v) => {
+            path = path + v
+            self.advance()
+          }
+          _ => raise self.error_here("expected a version after '@'")
+        }
+      }
       Dot =>
         match self.peek(1).kind {
           Ident("with") => break
@@ -314,7 +325,7 @@ fn Parser::parse_world_func(
 ///|
 fn Parser::parse_impexp(self : Parser, kw : String) -> ImpExp raise WitError {
   self.expect_kw(kw)
-  let name = self.expect_ident()
+  let name = self.parse_impexp_path()
   let as_name = if self.check_kw("as") {
     self.advance()
     Some(self.expect_ident())
@@ -347,6 +358,48 @@ fn Parser::parse_impexp(self : Parser, kw : String) -> ImpExp raise WitError {
     self.expect_punct(Semi, "';'")
   }
   { name, asName: as_name, inline }
+}
+
+///|
+fn Parser::parse_impexp_path(self : Parser) -> String raise WitError {
+  let mut path = self.expect_ident()
+  for ;; {
+    match self.peek(0).kind {
+      Colon =>
+        match self.peek(1).kind {
+          Ident("interface") => break
+          _ => {
+            path = path + ":"
+            self.advance()
+          }
+        }
+      Slash => {
+        path = path + "/"
+        self.advance()
+      }
+      Dot => {
+        path = path + "."
+        self.advance()
+      }
+      At => {
+        path = path + "@"
+        self.advance()
+        match self.peek(0).kind {
+          Version(v) => {
+            path = path + v
+            self.advance()
+          }
+          _ => raise self.error_here("expected a version after '@'")
+        }
+      }
+      Ident(text) if text != "as" => {
+        path = path + text
+        self.advance()
+      }
+      _ => break
+    }
+  }
+  path
 }
 
 ///|
@@ -405,6 +458,17 @@ fn Parser::parse_use_path(self : Parser) -> String {
       Slash => {
         s = s + "/"
         self.advance()
+      }
+      At => {
+        s = s + "@"
+        self.advance()
+        match self.peek(0).kind {
+          Version(v) => {
+            s = s + v
+            self.advance()
+          }
+          _ => return s
+        }
       }
       Dot =>
         match self.peek(1).kind {

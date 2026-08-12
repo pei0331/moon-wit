@@ -49,7 +49,7 @@ fn generate_item(item : WitItem) -> String {
   match item {
     Interface(iface) => generate_interface(iface)
     World(w) => generate_world(w)
-    Use(u) => "// use \{u.to_string()}\n"
+    Use(u) => "// \{u.to_string()}\n"
   }
 }
 
@@ -70,7 +70,7 @@ fn generate_interface_item(item : InterfaceItem) -> String {
   match item {
     Type(t) => generate_typedef(t)
     Func(f) => generate_func(f)
-    Use(u) => "// use \{u.to_string()}\n"
+    Use(u) => "// \{u.to_string()}\n"
   }
 }
 
@@ -94,7 +94,7 @@ fn generate_world_item(item : WorldItem) -> String {
     ImportFunc(f) => "// import \{f.name}\n\n" + generate_func(f)
     ExportFunc(f) => "// export \{f.name}\n\n" + generate_func(f)
     Include(path, names) => "// \{Include(path, names).to_string()}\n"
-    Use(u) => "// use \{u.to_string()}\n"
+    Use(u) => "// \{u.to_string()}\n"
   }
 }
 

@@ -23,6 +23,9 @@ scaffold generator.
   generate prefixed opaque-handle API stubs.
 - World `include path;` declarations and `with { old as new }` renames are
   parsed, rendered and retained in generated output as composition comments.
+- External interface paths preserve namespaces, hierarchy and versions across
+  `use`, `import`, `export` and `include` declarations.
+- Generated comments render `use` declarations without a duplicated keyword.
 - Full AST (`ast.mbt`) with a WIT round-trip renderer.
 - Code generator (`codegen.mbt`): `record`→`struct`, `variant`→payload `enum`,
   `enum`→unit `enum`, `flags`→`Bool`-field `struct`, `resource`→`#external

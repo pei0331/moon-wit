@@ -24,6 +24,15 @@ test "lex version token after @" {
 }
 
 ///|
+test "lex version stops before use selector dot" {
+  let toks = tokenize("streams@0.2.0.{input-stream}")
+  assert_eq(toks[1].to_string(), "@")
+  assert_eq(toks[2].to_string(), "version(0.2.0)")
+  assert_eq(toks[3].to_string(), ".")
+  assert_eq(toks[4].to_string(), "{")
+}
+
+///|
 test "lex line and column tracking" {
   let toks = tokenize("a\n  b")
   assert_eq(toks[0].line, 1)

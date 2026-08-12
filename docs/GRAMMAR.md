@@ -23,13 +23,14 @@ world-item ::= 'include' world-path ['with' '{' rename (',' rename)* '}'] ';'
              | 'import' (impexp | func)
              | 'export' (impexp | func)
              | use
-world-path ::= ident (':' ident)? ('/' ident)*
+world-path ::= ident (':' ident)? ('/' ident)* ['@' version]
 rename     ::= ident 'as' ident
 impexp     ::= name ['as' name] [':' 'interface' '{' interface-item* '}']
 
 use        ::= 'use' path '.' '{' name ['as' name] (',' name ['as' name])* '}' ';'
              | 'use' path '.' '*' ';'
-path       ::= ident (':' ident)? ('/' ident)*      -- e.g. `wasi:io/streams`
+path       ::= ident (':' ident)? ('/' ident)* ['@' version]
+                                                     -- e.g. `wasi:io/streams@0.2.0`
 
 type-def   ::= record | variant | enum | flags | resource | type-alias
 record     ::= 'record' name '{' (field [','])+ '}'

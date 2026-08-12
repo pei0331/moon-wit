@@ -26,6 +26,8 @@ let moon_pkg = @moon_wit.generate_moon_pkg(
 CLI outputs compiled by CI. They cover inline interfaces, escaped identifiers
 direct world-level function imports/exports and resource constructors, static
 functions and methods, plus world composition includes and renames.
+Versioned external paths such as `wasi:io/streams@0.2.0` are preserved across
+parse/render and code generation.
 
 ## Public API
 

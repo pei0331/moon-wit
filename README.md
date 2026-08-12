@@ -78,6 +78,9 @@ world app {
 }
 ```
 
+External package paths retain namespaces, hierarchy and versions, including
+forms such as `wasi:io/streams@0.2.0`.
+
 Resource declarations with constructors, static functions and methods are
 also scaffolded. See `examples/resource` for the generated opaque handle API.
 

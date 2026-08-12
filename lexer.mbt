@@ -195,10 +195,13 @@ fn Lexer::lex_version(self : Lexer) -> String {
   let start = self.pos
   for ;; {
     match self.peek_char(0) {
-      Some(ch) if ch.is_ascii_digit() ||
-        ch == '.' ||
-        ch == '-' ||
-        ch.is_ascii_lowercase() => self.advance()
+      Some('.') =>
+        match self.peek_char(1) {
+          Some(next) if next.is_ascii_digit() => self.advance()
+          _ => break
+        }
+      Some(ch) if ch.is_ascii_digit() || ch == '-' || ch.is_ascii_lowercase() =>
+        self.advance()
       _ => break
     }
   }

@@ -191,6 +191,15 @@ test "generate world includes as composition comments" {
 }
 
 ///|
+test "generate versioned external paths" {
+  let out = generate(parse_or_fail(wasi_paths_wit))
+  assert_eq(contains_str(out, "// use wasi:io/streams@0.2.0."), true)
+  assert_eq(contains_str(out, "// import wasi:cli/environment@0.2.0"), true)
+  assert_eq(contains_str(out, "// export wasi:cli/run@0.2.0 as run"), true)
+  assert_eq(contains_str(out, "// include wasi:cli/command@0.2.0;"), true)
+}
+
+///|
 /// Parse `type t = <wit>;` and return the alias's referenced type. Test
 /// binaries see enum constructors as read-only in this toolchain, so build
 /// `WitType` values through the parser instead of writing constructors.

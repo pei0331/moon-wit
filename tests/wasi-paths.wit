@@ -1,0 +1,9 @@
+package example:wasi-paths;
+
+use wasi:io/streams@0.2.0.{input-stream as input, output-stream};
+
+world app {
+  import wasi:cli/environment@0.2.0;
+  export wasi:cli/run@0.2.0 as run;
+  include wasi:cli/command@0.2.0;
+}

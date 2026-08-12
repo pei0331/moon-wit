@@ -89,6 +89,16 @@ let include_wit : String =
   #|}
 
 ///|
+let wasi_paths_wit : String =
+  #|package example:wasi-paths;
+  #|use wasi:io/streams@0.2.0.{input-stream as input, output-stream};
+  #|world app {
+  #|  import wasi:cli/environment@0.2.0;
+  #|  export wasi:cli/run@0.2.0 as run;
+  #|  include wasi:cli/command@0.2.0;
+  #|}
+
+///|
 fn parse_or_fail(src : String) -> WitPackage {
   parse(src) catch {
     e => abort("parse failed: \{e.to_string()}")
@@ -470,6 +480,41 @@ test "parse error: include requires a path" {
     e => e.to_string()
   }
   assert_eq(msg, "1:32: expected a world path after 'include'")
+}
+
+///|
+test "parse versioned external WIT paths" {
+  let p = parse_or_fail(wasi_paths_wit)
+  match p.items[0] {
+    Use(u) => {
+      assert_eq(u.path, "wasi:io/streams@0.2.0")
+      assert_eq(u.names[0].name, "input-stream")
+      assert_eq(u.names[0].asName, Some("input"))
+    }
+    _ => abort("expected top-level use")
+  }
+  match p.items[1] {
+    World(w) => {
+      match w.items[0] {
+        Import(imp) => assert_eq(imp.name, "wasi:cli/environment@0.2.0")
+        _ => abort("expected versioned import")
+      }
+      match w.items[1] {
+        Export(exp) => {
+          assert_eq(exp.name, "wasi:cli/run@0.2.0")
+          assert_eq(exp.asName, Some("run"))
+        }
+        _ => abort("expected versioned export")
+      }
+      match w.items[2] {
+        Include(path, _) => assert_eq(path, "wasi:cli/command@0.2.0")
+        _ => abort("expected versioned include")
+      }
+    }
+    _ => abort("expected world")
+  }
+  let rendered = p.to_string()
+  assert_eq(parse_or_fail(rendered).to_string(), rendered)
 }
 
 ///|
