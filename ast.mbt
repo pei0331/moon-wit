@@ -164,6 +164,8 @@ pub enum WorldItem {
   ImportFunc(FuncSig)
   /// A direct `export name: func(...);` declaration.
   ExportFunc(FuncSig)
+  /// A world composition declaration such as `include wasi:cli/run;`.
+  Include(String)
   Use(UseDecl)
 }
 
@@ -430,6 +432,7 @@ pub fn WorldItem::to_string(self : WorldItem) -> String {
     Export(exp) => "export \{exp.to_string()}"
     ImportFunc(f) => "import \{f.to_string()};"
     ExportFunc(f) => "export \{f.to_string()};"
+    Include(path) => "include \{path};"
     Use(u) => u.to_string()
   }
 }

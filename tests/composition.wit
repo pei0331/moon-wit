@@ -1,0 +1,6 @@
+package example:composition;
+
+world app {
+  include wasi:cli/run;
+  include local:shared/base;
+}

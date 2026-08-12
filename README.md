@@ -69,6 +69,14 @@ world calculator {
 See `examples/calculator` for the generated package. CI regenerates and builds
 all checked-in examples.
 
+World composition paths are also parsed and preserved:
+
+```wit
+world app {
+  include wasi:cli/run;
+}
+```
+
 Resource declarations with constructors, static functions and methods are
 also scaffolded. See `examples/resource` for the generated opaque handle API.
 

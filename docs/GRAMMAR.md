@@ -19,9 +19,11 @@ interface-item ::= use | type-def | func
 
 world      ::= 'world' name '{' world-item* '}'
              | 'world' name ';'
-world-item ::= 'import' (impexp | func)
+world-item ::= 'include' world-path ';'
+             | 'import' (impexp | func)
              | 'export' (impexp | func)
              | use
+world-path ::= ident (':' ident)? ('/' ident)*
 impexp     ::= name ['as' name] [':' 'interface' '{' interface-item* '}']
 
 use        ::= 'use' path '.' '{' name ['as' name] (',' name ['as' name])* '}' ';'
@@ -136,5 +138,6 @@ Currently unsupported (documented limitations):
 - named-result structs (multiple named results flatten to a tuple)
 - bit-packed `flags` (generated as `Bool` fields)
 - Component Model Canonical ABI lowering/lifting and callable bindings
+- `include ... with { ... }` renaming clauses (the include path itself is preserved)
 
 These are targeted for later phases.

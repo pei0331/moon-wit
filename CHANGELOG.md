@@ -21,6 +21,8 @@ scaffold generator.
   lists use the package-qualified `@list.List[T]` MoonBit type.
 - Resource bodies now parse constructors, static functions and methods, and
   generate prefixed opaque-handle API stubs.
+- World `include path;` declarations are parsed, rendered and retained in
+  generated output as composition comments.
 - Full AST (`ast.mbt`) with a WIT round-trip renderer.
 - Code generator (`codegen.mbt`): `record`→`struct`, `variant`→payload `enum`,
   `enum`→unit `enum`, `flags`→`Bool`-field `struct`, `resource`→`#external

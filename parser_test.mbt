@@ -80,6 +80,14 @@ let resource_wit : String =
   #|}
 
 ///|
+let include_wit : String =
+  #|package example:composition;
+  #|world app {
+  #|  include wasi:cli/run;
+  #|  include local:shared/base;
+  #|}
+
+///|
 fn parse_or_fail(src : String) -> WitPackage {
   parse(src) catch {
     e => abort("parse failed: \{e.to_string()}")
@@ -414,6 +422,38 @@ test "parse resource functions" {
   }
   let rendered = parse_or_fail(resource_wit).to_string()
   assert_eq(parse_or_fail(rendered).to_string(), rendered)
+}
+
+///|
+test "parse world includes" {
+  let p = parse_or_fail(include_wit)
+  match p.items[0] {
+    World(w) => {
+      assert_eq(w.items.length(), 2)
+      match w.items[0] {
+        Include(path) => assert_eq(path, "wasi:cli/run")
+        _ => abort("expected include")
+      }
+      match w.items[1] {
+        Include(path) => assert_eq(path, "local:shared/base")
+        _ => abort("expected include")
+      }
+    }
+    _ => abort("expected world")
+  }
+  let rendered = p.to_string()
+  assert_eq(parse_or_fail(rendered).to_string(), rendered)
+}
+
+///|
+test "parse error: include requires a path" {
+  let msg = try {
+    ignore(parse("package x:y; world w { include ; }"))
+    ""
+  } catch {
+    e => e.to_string()
+  }
+  assert_eq(msg, "1:32: expected a world path after 'include'")
 }
 
 ///|

@@ -199,6 +199,8 @@ fn Parser::parse_world(self : Parser) -> World raise WitError {
       while self.peek(0).kind != RBrace && self.peek(0).kind != Eof {
         match self.peek(0).kind {
           Ident(text) if text == "use" => items.push(Use(self.parse_use()))
+          Ident(text) if text == "include" =>
+            items.push(Include(self.parse_include()))
           Ident(text) if text == "import" =>
             if self.check_world_func("import") {
               items.push(ImportFunc(self.parse_world_func("import")))
@@ -213,7 +215,7 @@ fn Parser::parse_world(self : Parser) -> World raise WitError {
             }
           _ =>
             raise self.error_here(
-              "expected 'import', 'export' or 'use', found \{self.peek(0).to_string()}",
+              "expected 'include', 'import', 'export' or 'use', found \{self.peek(0).to_string()}",
             )
         }
       }
@@ -225,6 +227,40 @@ fn Parser::parse_world(self : Parser) -> World raise WitError {
         "expected '{{' or ';' after world name, found \{self.peek(0).to_string()}",
       )
   }
+}
+
+///|
+fn Parser::parse_include(self : Parser) -> String raise WitError {
+  self.expect_kw("include")
+  let mut path = ""
+  let mut saw_segment = false
+  for ;; {
+    match self.peek(0).kind {
+      Ident(text) => {
+        path = path + text
+        saw_segment = true
+        self.advance()
+      }
+      Colon => {
+        path = path + ":"
+        self.advance()
+      }
+      Slash => {
+        path = path + "/"
+        self.advance()
+      }
+      Dot => {
+        path = path + "."
+        self.advance()
+      }
+      _ => break
+    }
+  }
+  if !saw_segment {
+    raise self.error_here("expected a world path after 'include'")
+  }
+  self.expect_punct(Semi, "';'")
+  path
 }
 
 ///|

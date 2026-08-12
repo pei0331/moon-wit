@@ -177,6 +177,14 @@ test "generate resource functions" {
 }
 
 ///|
+test "generate world includes as composition comments" {
+  let out = generate(parse_or_fail(include_wit))
+  assert_eq(contains_str(out, "// include wasi:cli/run;"), true)
+  assert_eq(contains_str(out, "// include local:shared/base;"), true)
+  assert_eq(needs_list_import(parse_or_fail(include_wit)), false)
+}
+
+///|
 /// Parse `type t = <wit>;` and return the alias's referenced type. Test
 /// binaries see enum constructors as read-only in this toolchain, so build
 /// `WitType` values through the parser instead of writing constructors.

@@ -38,6 +38,7 @@ jobs:
           moon run cmd/moon-wit -- gen tests/escaped-identifiers.wit -o examples/escaped
           moon run cmd/moon-wit -- gen tests/calculator.wit -o examples/calculator
           moon run cmd/moon-wit -- gen tests/resource.wit -o examples/resource
+          moon run cmd/moon-wit -- gen tests/composition.wit -o examples/composition
 
       - name: Build (CLI + generated examples)
         run: moon build
