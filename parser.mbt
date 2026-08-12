@@ -200,9 +200,17 @@ fn Parser::parse_world(self : Parser) -> World raise WitError {
         match self.peek(0).kind {
           Ident(text) if text == "use" => items.push(Use(self.parse_use()))
           Ident(text) if text == "import" =>
-            items.push(Import(self.parse_impexp("import")))
+            if self.check_world_func("import") {
+              items.push(ImportFunc(self.parse_world_func("import")))
+            } else {
+              items.push(Import(self.parse_impexp("import")))
+            }
           Ident(text) if text == "export" =>
-            items.push(Export(self.parse_impexp("export")))
+            if self.check_world_func("export") {
+              items.push(ExportFunc(self.parse_world_func("export")))
+            } else {
+              items.push(Export(self.parse_impexp("export")))
+            }
           _ =>
             raise self.error_here(
               "expected 'import', 'export' or 'use', found \{self.peek(0).to_string()}",
@@ -217,6 +225,28 @@ fn Parser::parse_world(self : Parser) -> World raise WitError {
         "expected '{{' or ';' after world name, found \{self.peek(0).to_string()}",
       )
   }
+}
+
+///|
+fn Parser::check_world_func(self : Parser, kw : String) -> Bool {
+  if !self.check_kw(kw) {
+    return false
+  }
+  match (self.peek(1).kind, self.peek(2).kind, self.peek(3).kind) {
+    (Ident(_), Colon, Ident("func")) => true
+    _ => false
+  }
+}
+
+///|
+fn Parser::parse_world_func(
+  self : Parser,
+  kw : String,
+) -> FuncSig raise WitError {
+  self.expect_kw(kw)
+  let name = self.expect_ident()
+  self.expect_punct(Colon, "':'")
+  self.parse_func_after_name(name)
 }
 
 ///|
@@ -426,6 +456,14 @@ fn Parser::parse_resource(self : Parser) -> TypeDef raise WitError {
 fn Parser::parse_func(self : Parser) -> FuncSig raise WitError {
   let name = self.expect_ident()
   self.expect_punct(Colon, "':'")
+  self.parse_func_after_name(name)
+}
+
+///|
+fn Parser::parse_func_after_name(
+  self : Parser,
+  name : String,
+) -> FuncSig raise WitError {
   self.expect_kw("func")
   self.expect_punct(LParen, "'('")
   let params : Array[Field] = Array::new()

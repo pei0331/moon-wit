@@ -22,9 +22,9 @@ let moon_pkg = @moon_wit.generate_moon_pkg(
 )
 ```
 
-`examples/hello` and `examples/escaped` are checked-in CLI outputs compiled by
-CI. The escaped-identifier example verifies that WIT names such as `%type` and
-`%match` become legal MoonBit identifiers (`type_` and `match_`).
+`examples/hello`, `examples/escaped` and `examples/calculator` are checked-in
+CLI outputs compiled by CI. They cover inline interfaces, escaped identifiers
+and direct world-level function imports/exports.
 
 ## Public API
 

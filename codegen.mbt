@@ -77,14 +77,24 @@ fn generate_interface_item(item : InterfaceItem) -> String {
 ///|
 fn generate_world(world : World) -> String {
   let mut out = ""
-  for item in world.items {
-    match item {
-      Import(imp) => out = out + generate_impexp("import", imp)
-      Export(exp) => out = out + generate_impexp("export", exp)
-      Use(u) => out = out + "// use \{u.to_string()}\n"
+  for i in 0..<world.items.length() {
+    out = out + generate_world_item(world.items[i])
+    if i + 1 < world.items.length() {
+      out = out + "\n"
     }
   }
   out
+}
+
+///|
+fn generate_world_item(item : WorldItem) -> String {
+  match item {
+    Import(imp) => generate_impexp("import", imp)
+    Export(exp) => generate_impexp("export", exp)
+    ImportFunc(f) => "// import \{f.name}\n\n" + generate_func(f)
+    ExportFunc(f) => "// export \{f.name}\n\n" + generate_func(f)
+    Use(u) => "// use \{u.to_string()}\n"
+  }
 }
 
 ///|
@@ -145,7 +155,9 @@ fn generate_typedef(def : TypeDef) -> String {
 ///|
 fn generate_func(f : FuncSig) -> String {
   let mut out = "///|\npub fn \{field_name(f.name)}(\{params_str(f.params)})"
-  if f.results.length() != 0 {
+  if f.results.length() == 0 {
+    out = out + " -> Unit"
+  } else {
     out = out + " -> \{results_str(f.results)}"
   }
   out = out + " {\n"
@@ -201,7 +213,7 @@ pub fn type_str(t : WitType) -> String {
     TChar => "Char"
     TString => "String"
     TBool => "Bool"
-    List(t) => "List[\{type_str(t)}]"
+    List(t) => "@list.List[\{type_str(t)}]"
     Option(t) => "Option[\{type_str(t)}]"
     Result(ok, err) => "Result[\{slot_str(ok)}, \{slot_str(err)}]"
     Tuple(ts) => "(\{join_strings(ts.map(fn(t) { type_str(t) }), ", ")})"
@@ -364,6 +376,7 @@ fn world_item_uses_list(item : WorldItem) -> Bool {
   match item {
     Import(imp) => impexp_uses_list(imp)
     Export(imp) => impexp_uses_list(imp)
+    ImportFunc(f) | ExportFunc(f) => func_uses_list(f)
     Use(_) => false
   }
 }

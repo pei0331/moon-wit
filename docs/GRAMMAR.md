@@ -19,8 +19,8 @@ interface-item ::= use | type-def | func
 
 world      ::= 'world' name '{' world-item* '}'
              | 'world' name ';'
-world-item ::= 'import' impexp ';'
-             | 'export' impexp ';'
+world-item ::= 'import' (impexp | func)
+             | 'export' (impexp | func)
              | use
 impexp     ::= name ['as' name] [':' 'interface' '{' interface-item* '}']
 
@@ -78,7 +78,7 @@ their leading `%` in the AST and rendered WIT.
 | `char` | `Char` | |
 | `string` | `String` | |
 | `bool` | `Bool` | |
-| `list<T>` | `List[T]` | requires `moonbitlang/core/list` |
+| `list<T>` | `@list.List[T]` | requires `moonbitlang/core/list` |
 | `option<T>` | `Option[T]` | |
 | `result<T, E>` | `Result[T, E]` | missing slot → `Unit` |
 | `tuple<A, B, …>` | `(A, B, …)` | |

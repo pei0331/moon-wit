@@ -65,7 +65,7 @@ test "generate greeting typedefs" {
 test "generate greeting funcs" {
   let out = generate(parse_or_fail(greeting_wit))
   assert_eq(
-    contains_str(out, "pub fn list_people(limit : UInt) -> List[Person]"),
+    contains_str(out, "pub fn list_people(limit : UInt) -> @list.List[Person]"),
     true,
   )
   assert_eq(
@@ -145,6 +145,23 @@ test "generate escaped identifiers as valid MoonBit names" {
 }
 
 ///|
+test "generate direct world functions" {
+  let pkg = parse_or_fail(calculator_wit)
+  let out = generate(pkg)
+  assert_eq(contains_str(out, "// import log"), true)
+  assert_eq(contains_str(out, "pub fn log(message : String) -> Unit"), true)
+  assert_eq(contains_str(out, "// export add"), true)
+  assert_eq(contains_str(out, "pub fn add(a : Int, b : Int) -> Int"), true)
+  assert_eq(
+    contains_str(
+      out, "pub fn batch_add(values : @list.List[Int]) -> @list.List[Int]",
+    ),
+    true,
+  )
+  assert_eq(needs_list_import(pkg), true)
+}
+
+///|
 /// Parse `type t = <wit>;` and return the alias's referenced type. Test
 /// binaries see enum constructors as read-only in this toolchain, so build
 /// `WitType` values through the parser instead of writing constructors.
@@ -181,7 +198,7 @@ test "type mapping" {
   assert_eq(type_str(alias_ty("char")), "Char")
   assert_eq(type_str(alias_ty("string")), "String")
   assert_eq(type_str(alias_ty("bool")), "Bool")
-  assert_eq(type_str(alias_ty("list<u32>")), "List[UInt]")
+  assert_eq(type_str(alias_ty("list<u32>")), "@list.List[UInt]")
   assert_eq(type_str(alias_ty("option<string>")), "Option[String]")
   assert_eq(type_str(alias_ty("result<u64, string>")), "Result[UInt64, String]")
   assert_eq(type_str(alias_ty("result<_, string>")), "Result[Unit, String]")

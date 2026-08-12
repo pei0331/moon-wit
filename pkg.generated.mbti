@@ -176,6 +176,8 @@ pub fn World::to_string(Self) -> String
 pub enum WorldItem {
   Import(ImpExp)
   Export(ImpExp)
+  ImportFunc(FuncSig)
+  ExportFunc(FuncSig)
   Use(UseDecl)
 }
 pub fn WorldItem::to_string(Self) -> String

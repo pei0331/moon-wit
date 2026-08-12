@@ -15,6 +15,10 @@ scaffold generator.
   `import`/`export` (named and inline-interface), `record`/`variant`/`enum`/
   `flags`/`resource`/`type` aliases, and `func` signatures including named and
   multiple results.
+- Direct world-level function imports and exports, including code generation
+  and list-dependency detection.
+- Generated no-result functions use an explicit `Unit` return type, and WIT
+  lists use the package-qualified `@list.List[T]` MoonBit type.
 - Full AST (`ast.mbt`) with a WIT round-trip renderer.
 - Code generator (`codegen.mbt`): `record`→`struct`, `variant`→payload `enum`,
   `enum`→unit `enum`, `flags`→`Bool`-field `struct`, `resource`→`#external
@@ -27,6 +31,7 @@ scaffold generator.
   positions) and codegen (generated declarations, type mapping and list-import
   detection), including comma-separated WIT members, optional function
   semicolons and parse/render round trips.
-- `tests/hello-world.wit` and `tests/greeting.wit` fixtures; checked-in
-  `examples/hello` generated bindings verified by CI via `moon build`.
+- WIT fixtures for hello-world, rich type mappings, escaped identifiers and
+  direct world functions; checked-in generated examples verified by CI via
+  `moon build`.
 - Docs: README, `docs/GRAMMAR.md`, `docs/SUBMISSION.md`.

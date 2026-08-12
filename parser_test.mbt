@@ -60,6 +60,15 @@ let greeting_wit : String =
   #|}
 
 ///|
+let calculator_wit : String =
+  #|package example:calculator;
+  #|world calculator {
+  #|  import log: func(message: string);
+  #|  export add: func(a: s32, b: s32) -> s32;
+  #|  export batch-add: func(values: list<s32>) -> list<s32>;
+  #|}
+
+///|
 fn parse_or_fail(src : String) -> WitPackage {
   parse(src) catch {
     e => abort("parse failed: \{e.to_string()}")
@@ -327,6 +336,47 @@ test "parse greeting world with use" {
     }
     _ => abort("expected world")
   }
+}
+
+///|
+test "parse direct world functions" {
+  let p = parse_or_fail(calculator_wit)
+  match p.items[0] {
+    World(w) => {
+      assert_eq(w.items.length(), 3)
+      match w.items[0] {
+        ImportFunc(f) => {
+          assert_eq(f.name, "log")
+          assert_eq(f.params[0].ty.to_string(), "string")
+          assert_eq(f.results.length(), 0)
+        }
+        _ => abort("expected direct function import")
+      }
+      match w.items[1] {
+        ExportFunc(f) => {
+          assert_eq(f.name, "add")
+          assert_eq(f.params.length(), 2)
+          assert_eq(f.results[0].to_string(), "s32")
+        }
+        _ => abort("expected direct function export")
+      }
+      match w.items[2] {
+        ExportFunc(f) => assert_eq(f.name, "batch-add")
+        _ => abort("expected direct function export")
+      }
+    }
+    _ => abort("expected world")
+  }
+}
+
+///|
+test "render direct world functions round trip" {
+  let rendered = parse_or_fail(calculator_wit).to_string()
+  assert_eq(
+    contains_test_str(rendered, "export add: func(a: s32, b: s32) -> s32;"),
+    true,
+  )
+  assert_eq(parse_or_fail(rendered).to_string(), rendered)
 }
 
 ///|

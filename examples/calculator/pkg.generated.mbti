@@ -1,0 +1,21 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "pei0331/moon-wit/examples/calculator"
+
+import {
+  "moonbitlang/core/list",
+}
+
+// Values
+pub fn add(Int, Int) -> Int
+
+pub fn batch_add(@list.List[Int]) -> @list.List[Int]
+
+pub fn log(String) -> Unit
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

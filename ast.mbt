@@ -147,6 +147,10 @@ pub struct ImpExp {
 pub enum WorldItem {
   Import(ImpExp)
   Export(ImpExp)
+  /// A direct `import name: func(...);` declaration.
+  ImportFunc(FuncSig)
+  /// A direct `export name: func(...);` declaration.
+  ExportFunc(FuncSig)
   Use(UseDecl)
 }
 
@@ -324,7 +328,12 @@ pub fn TypeDef::to_string(self : TypeDef) -> String {
 
 ///|
 pub fn FuncSig::to_string(self : FuncSig) -> String {
-  let mut s = "\{self.name}: func("
+  "\{self.name}: \{self.type_to_string()}"
+}
+
+///|
+fn FuncSig::type_to_string(self : FuncSig) -> String {
+  let mut s = "func("
   s = s + join_strings(self.params.map(fn(p) { p.to_string() }), ", ")
   s = s + ")"
   if self.results.length() != 0 {
@@ -387,6 +396,8 @@ pub fn WorldItem::to_string(self : WorldItem) -> String {
   match self {
     Import(imp) => "import \{imp.to_string()}"
     Export(exp) => "export \{exp.to_string()}"
+    ImportFunc(f) => "import \{f.to_string()};"
+    ExportFunc(f) => "export \{f.to_string()};"
     Use(u) => u.to_string()
   }
 }

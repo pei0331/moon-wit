@@ -57,6 +57,18 @@ ABI import/export plumbing is tracked as future work.
 | `moon-wit version` | Print the version |
 | `moon-wit help` | Show usage |
 
+Direct functions in a WIT world are supported:
+
+```wit
+world calculator {
+  import log: func(message: string);
+  export add: func(a: s32, b: s32) -> s32;
+}
+```
+
+See `examples/calculator` for the generated package. CI regenerates and builds
+all checked-in examples.
+
 ## How it maps WIT to MoonBit
 
 `record` → `struct`, `variant` → payload `enum`, `enum` → unit `enum`,
