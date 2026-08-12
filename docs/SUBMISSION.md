@@ -52,7 +52,7 @@ and its test suite are public and maintained by the Bytecode Alliance, so
   comments and `@version` support.
 - **Parser** (`parser.mbt`) — recursive-descent parser for the core subset,
   including named results, inline `interface` blocks and direct function
-  imports/exports in worlds.
+  imports/exports in worlds, plus world composition includes with renames.
 - **AST** (`ast.mbt`) — full syntax tree with a WIT round-trip renderer.
 - **Code generator** (`codegen.mbt`) — maps WIT definitions to idiomatic
   MoonBit (see [GRAMMAR.md](GRAMMAR.md) for the mapping tables). Emits

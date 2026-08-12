@@ -181,6 +181,12 @@ test "generate world includes as composition comments" {
   let out = generate(parse_or_fail(include_wit))
   assert_eq(contains_str(out, "// include wasi:cli/run;"), true)
   assert_eq(contains_str(out, "// include local:shared/base;"), true)
+  assert_eq(
+    contains_str(
+      out, "// include local:shared/legacy with {old-name as new-name, run as start};",
+    ),
+    true,
+  )
   assert_eq(needs_list_import(parse_or_fail(include_wit)), false)
 }
 

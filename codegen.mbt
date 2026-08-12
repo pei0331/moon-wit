@@ -93,7 +93,7 @@ fn generate_world_item(item : WorldItem) -> String {
     Export(exp) => generate_impexp("export", exp)
     ImportFunc(f) => "// import \{f.name}\n\n" + generate_func(f)
     ExportFunc(f) => "// export \{f.name}\n\n" + generate_func(f)
-    Include(path) => "// include \{path};\n"
+    Include(path, names) => "// \{Include(path, names).to_string()}\n"
     Use(u) => "// use \{u.to_string()}\n"
   }
 }
@@ -399,7 +399,7 @@ fn world_item_uses_list(item : WorldItem) -> Bool {
     Import(imp) => impexp_uses_list(imp)
     Export(imp) => impexp_uses_list(imp)
     ImportFunc(f) | ExportFunc(f) => func_uses_list(f)
-    Include(_) => false
+    Include(_, _) => false
     Use(_) => false
   }
 }

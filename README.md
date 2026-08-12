@@ -74,6 +74,7 @@ World composition paths are also parsed and preserved:
 ```wit
 world app {
   include wasi:cli/run;
+  include local:shared/base with { old-name as new-name };
 }
 ```
 

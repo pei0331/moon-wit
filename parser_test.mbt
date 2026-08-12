@@ -85,6 +85,7 @@ let include_wit : String =
   #|world app {
   #|  include wasi:cli/run;
   #|  include local:shared/base;
+  #|  include local:shared/legacy with { old-name as new-name, run as start };
   #|}
 
 ///|
@@ -429,14 +430,29 @@ test "parse world includes" {
   let p = parse_or_fail(include_wit)
   match p.items[0] {
     World(w) => {
-      assert_eq(w.items.length(), 2)
+      assert_eq(w.items.length(), 3)
       match w.items[0] {
-        Include(path) => assert_eq(path, "wasi:cli/run")
+        Include(path, names) => {
+          assert_eq(path, "wasi:cli/run")
+          assert_eq(names.length(), 0)
+        }
         _ => abort("expected include")
       }
       match w.items[1] {
-        Include(path) => assert_eq(path, "local:shared/base")
+        Include(path, names) => {
+          assert_eq(path, "local:shared/base")
+          assert_eq(names.length(), 0)
+        }
         _ => abort("expected include")
+      }
+      match w.items[2] {
+        Include(path, names) => {
+          assert_eq(path, "local:shared/legacy")
+          assert_eq(names[0].name, "old-name")
+          assert_eq(names[0].asName, Some("new-name"))
+          assert_eq(names[1].asName, Some("start"))
+        }
+        _ => abort("expected include with renames")
       }
     }
     _ => abort("expected world")

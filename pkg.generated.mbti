@@ -189,7 +189,7 @@ pub enum WorldItem {
   Export(ImpExp)
   ImportFunc(FuncSig)
   ExportFunc(FuncSig)
-  Include(String)
+  Include(String, Array[UseName])
   Use(UseDecl)
 }
 pub fn WorldItem::to_string(Self) -> String

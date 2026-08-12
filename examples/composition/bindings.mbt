@@ -4,3 +4,5 @@
 // include wasi:cli/run;
 
 // include local:shared/base;
+
+// include local:shared/legacy with {old-name as new-name, run as start};

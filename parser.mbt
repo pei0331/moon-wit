@@ -199,8 +199,10 @@ fn Parser::parse_world(self : Parser) -> World raise WitError {
       while self.peek(0).kind != RBrace && self.peek(0).kind != Eof {
         match self.peek(0).kind {
           Ident(text) if text == "use" => items.push(Use(self.parse_use()))
-          Ident(text) if text == "include" =>
-            items.push(Include(self.parse_include()))
+          Ident(text) if text == "include" => {
+            let (path, names) = self.parse_include()
+            items.push(Include(path, names))
+          }
           Ident(text) if text == "import" =>
             if self.check_world_func("import") {
               items.push(ImportFunc(self.parse_world_func("import")))
@@ -230,12 +232,15 @@ fn Parser::parse_world(self : Parser) -> World raise WitError {
 }
 
 ///|
-fn Parser::parse_include(self : Parser) -> String raise WitError {
+fn Parser::parse_include(
+  self : Parser,
+) -> (String, Array[UseName]) raise WitError {
   self.expect_kw("include")
   let mut path = ""
   let mut saw_segment = false
   for ;; {
     match self.peek(0).kind {
+      Ident("with") if saw_segment => break
       Ident(text) => {
         path = path + text
         saw_segment = true
@@ -249,18 +254,39 @@ fn Parser::parse_include(self : Parser) -> String raise WitError {
         path = path + "/"
         self.advance()
       }
-      Dot => {
-        path = path + "."
-        self.advance()
-      }
+      Dot =>
+        match self.peek(1).kind {
+          Ident("with") => break
+          _ => {
+            path = path + "."
+            self.advance()
+          }
+        }
       _ => break
     }
   }
   if !saw_segment {
     raise self.error_here("expected a world path after 'include'")
   }
+  let names : Array[UseName] = Array::new()
+  if self.check_kw("with") {
+    self.advance()
+    self.expect_punct(LBrace, "'{' after 'with'")
+    while self.peek(0).kind != RBrace {
+      let source = self.expect_ident()
+      self.expect_kw("as")
+      let target = self.expect_ident()
+      names.push({ name: source, asName: Some(target) })
+      if self.peek(0).kind == Comma {
+        self.advance()
+      } else {
+        break
+      }
+    }
+    self.expect_punct(RBrace, "'}'")
+  }
   self.expect_punct(Semi, "';'")
-  path
+  (path, names)
 }
 
 ///|
