@@ -5,6 +5,8 @@ declarations and compiling function stubs. Version 0.1.0 does not yet implement
 the Component Model Canonical ABI, so the generated functions are not callable
 Wasm import/export bindings. Design inspired by `bytecodealliance/wit-bindgen`.
 
+The module has no third-party runtime dependencies beyond MoonBit core.
+
 ## Usage
 
 The library exposes the parse → generate pipeline used by the `moon-wit` CLI:
@@ -22,12 +24,13 @@ let moon_pkg = @moon_wit.generate_moon_pkg(
 )
 ```
 
-`examples/hello`, `examples/escaped` and `examples/calculator` are checked-in
-CLI outputs compiled by CI. They cover inline interfaces, escaped identifiers
-direct world-level function imports/exports and resource constructors, static
-functions and methods, plus world composition includes and renames.
+Checked-in CLI outputs are compiled by CI. They cover inline interfaces,
+escaped identifiers, direct world-level functions, resources, composition,
+versioned WASI paths, async scaffold handles and official-style attributes.
 Versioned external paths such as `wasi:io/streams@0.2.0` are preserved across
 parse/render and code generation.
+Flags use `UInt` bitmasks, while `future<T>` and `stream<T>` generate opaque
+typed scaffold handles.
 
 ## Public API
 

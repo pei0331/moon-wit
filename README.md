@@ -81,16 +81,22 @@ world app {
 External package paths retain namespaces, hierarchy and versions, including
 forms such as `wasi:io/streams@0.2.0`.
 
+Compatibility is also checked against syntax used by the official
+`WebAssembly/wasi-io` repository. `tests/official-style.wit` is a small
+original fixture covering attributes, resources and typed stream errors.
+
 Resource declarations with constructors, static functions and methods are
 also scaffolded. See `examples/resource` for the generated opaque handle API.
 
 ## How it maps WIT to MoonBit
 
 `record` → `struct`, `variant` → payload `enum`, `enum` → unit `enum`,
-`flags` → `Bool`-field `struct`, `resource` → `#external type`,
+`flags` → `UInt` bitmask plus constants, `resource` → `#external type`,
 `type` alias → MoonBit `type`, and every `func` → a typed `pub fn` stub.
 WIT escaped identifiers such as `%type` are converted to legal MoonBit names
 such as `type_` when they conflict with MoonBit keywords.
+`flags` become `UInt` bitmasks with named constants. `future<T>` and
+`stream<T>` retain their payload types through generated opaque handles.
 
 ```wit
 record person { name: string, age: u32 }
@@ -125,7 +131,7 @@ The full grammar and type-mapping tables are in
 moon fmt --check   # formatting
 moon check         # type-check
 moon test          # lexer / parser / codegen tests
-moon build         # build CLI and the generated examples/hello
+moon build         # build CLI and all generated examples
 ```
 
 CI also regenerates the checked-in example and package interfaces, then fails
@@ -145,8 +151,9 @@ moon publish
 therefore a manual release step. Create or move a version tag only after the
 published package has been verified.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/SUBMISSION.md](docs/SUBMISSION.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md), [docs/DESIGN.md](docs/DESIGN.md) and
+[docs/SUBMISSION.md](docs/SUBMISSION.md).
 
 ## License
 
-Apache-2.0. See [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE) and [THIRD_PARTY.md](THIRD_PARTY.md).

@@ -32,6 +32,16 @@ jobs:
       - name: CLI smoke test (parse)
         run: moon run cmd/moon-wit -- parse tests/hello-world.wit
 
+      - name: CLI rejects invalid input
+        shell: bash
+        run: |
+          ! moon run cmd/moon-wit -- unknown
+          ! moon run cmd/moon-wit -- parse tests/does-not-exist.wit
+          invalid_wit="$(mktemp)"
+          trap 'rm -f "$invalid_wit"' EXIT
+          printf 'package broken' > "$invalid_wit"
+          ! moon run cmd/moon-wit -- parse "$invalid_wit"
+
       - name: CLI smoke test (gen)
         run: |
           moon run cmd/moon-wit -- gen tests/hello-world.wit -o examples/hello
@@ -40,6 +50,8 @@ jobs:
           moon run cmd/moon-wit -- gen tests/resource.wit -o examples/resource
           moon run cmd/moon-wit -- gen tests/composition.wit -o examples/composition
           moon run cmd/moon-wit -- gen tests/wasi-paths.wit -o examples/wasi-paths
+          moon run cmd/moon-wit -- gen tests/async.wit -o examples/async
+          moon run cmd/moon-wit -- gen tests/official-style.wit -o examples/official-style
 
       - name: Build (CLI + generated examples)
         run: moon build

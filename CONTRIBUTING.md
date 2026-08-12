@@ -41,6 +41,7 @@ moon test
   exact error positions.
 - Codegen tests parse a fixture, generate, and assert the output contains the
   expected MoonBit declarations.
+- CI smoke tests exercise CLI success and failure exit paths on Linux.
 - Every grammar rule you touch should have at least one positive and one
   negative case.
 

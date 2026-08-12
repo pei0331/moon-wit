@@ -10,6 +10,6 @@ license = "Apache-2.0"
 
 keywords = [ "wit", "wasm", "component-model", "bindgen", "codegen" ]
 
-description = "A dependency-free WIT (Wasm Interface Types) parser and MoonBit binding generator"
+description = "A dependency-free WIT parser and MoonBit API scaffold generator"
 
 preferred_target = "native"

@@ -60,6 +60,8 @@ type       ::= primitive
              | 'tuple'   '<' type (',' type)* '>'
              | 'own'     '<' name '>'
              | 'borrow'  '<' name '>'
+             | 'future'  '<' ['_'|type] '>'
+             | 'stream'  '<' ['_'|type] '>'
 primitive  ::= 'u8' | 'u16' | 'u32' | 'u64'
              | 's8' | 's16' | 's32' | 's64'
              | 'f32' | 'f64' | 'char' | 'string' | 'bool'
@@ -68,6 +70,9 @@ primitive  ::= 'u8' | 'u16' | 'u32' | 'u64'
 Comments (`//`, `/* */`, `///`) and whitespace are skipped anywhere. Errors
 carry precise 1-based `line:column` positions. WIT escaped identifiers retain
 their leading `%` in the AST and rendered WIT.
+
+WIT attributes such as `@since(...)` and `@unstable(...)` are accepted and
+ignored as metadata. They are not retained by the current AST renderer.
 
 ## WIT → MoonBit type mapping
 
@@ -91,6 +96,8 @@ their leading `%` in the AST and rendered WIT.
 | `result<T, E>` | `Result[T, E]` | missing slot → `Unit` |
 | `tuple<A, B, …>` | `(A, B, …)` | |
 | `own<R>` / `borrow<R>` | `R` | the resource type name |
+| `future<T>` | `WitFuture[T]` | generated opaque scaffold handle |
+| `stream<T>` | `WitStream[T]` | generated opaque scaffold handle |
 | `name` | `Name` | PascalCase |
 
 ## WIT → MoonBit definition mapping
@@ -100,7 +107,7 @@ their leading `%` in the AST and rendered WIT.
 | `record person { … }` | `pub struct Person { … }` |
 | `variant animal { dog, bird(string) }` | `pub enum Animal { Dog, Bird(String) }` |
 | `enum tone { formal, casual }` | `pub enum Tone { Formal, Casual }` |
-| `flags permissions { read, … }` | `pub struct Permissions { read : Bool, … }` (P0 placeholder) |
+| `flags permissions { read, … }` | `pub type Permissions = UInt` plus bit constants |
 | `resource session;` | `#external type Session` (opaque) |
 | `resource counter { ... }` | opaque type plus `counter_new`, `counter_max` and `counter_increment` stubs |
 | `type id = u64;` | `pub type Id = UInt64` |
@@ -134,11 +141,9 @@ a MoonBit keyword, an underscore is appended: `%type` → `type_` and `%match` �
 
 Currently unsupported (documented limitations):
 
-- `with` clauses and `use ... with { ... }` semantics
-- `future` / `stream` handle types
 - multi-file package imports
 - named-result structs (multiple named results flatten to a tuple)
-- bit-packed `flags` (generated as `Bool` fields)
 - Component Model Canonical ABI lowering/lifting and callable bindings
 
-These are targeted for later phases.
+These are candidates for later phases; the current release does not claim
+support for them.
