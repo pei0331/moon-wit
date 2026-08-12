@@ -49,6 +49,10 @@ pub enum WitType {
   Own(String)
   /// `borrow<resource>`.
   Borrow(String)
+  /// `future<t>` asynchronous value handle.
+  Future(WitType?)
+  /// `stream<t>` asynchronous stream handle.
+  Stream(WitType?)
 }
 
 ///|
@@ -227,6 +231,8 @@ pub fn WitType::to_string(self : WitType) -> String {
       "tuple<\{join_strings(items.map(fn(t) { t.to_string() }), ", ")}>"
     Own(n) => "own<\{n}>"
     Borrow(n) => "borrow<\{n}>"
+    Future(t) => "future<\{slot_to_string(t)}>"
+    Stream(t) => "stream<\{slot_to_string(t)}>"
   }
 }
 

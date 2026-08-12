@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "pei0331/moon-wit/examples/official-style"
+
+import {
+  "moonbitlang/core/list",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+type InputStream
+pub fn InputStream::read(UInt64) -> Result[@list.List[Byte], String]
+
+// Type aliases
+pub type StreamError = String
+
+// Traits

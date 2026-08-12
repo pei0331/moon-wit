@@ -531,6 +531,40 @@ test "parse borrow type" {
 }
 
 ///|
+test "parse future and stream types" {
+  let src =
+    #|package test:async;
+    #|interface tasks {
+    #|  wait: func() -> future<list<u8>>;
+    #|  empty: func() -> future<_>;
+    #|  events: func() -> stream<string>;
+    #|}
+  let rendered = parse_or_fail(src).to_string()
+  assert_eq(contains_test_str(rendered, "future<list<u8>>"), true)
+  assert_eq(contains_test_str(rendered, "future<_>"), true)
+  assert_eq(contains_test_str(rendered, "stream<string>"), true)
+  assert_eq(parse_or_fail(rendered).to_string(), rendered)
+}
+
+///|
+test "render package version, wildcard uses and named results" {
+  let src =
+    #|package test:coverage@1.2.3;
+    #|interface api {
+    #|  use local:types/all.*;
+    #|  status: func() -> (code: u16)
+    #|}
+    #|world app {
+    #|  use local:types/all.*;
+    #|}
+  let rendered = parse_or_fail(src).to_string()
+  assert_eq(contains_test_str(rendered, "package test:coverage@1.2.3;"), true)
+  assert_eq(contains_test_str(rendered, "use local:types/all.*;"), true)
+  assert_eq(contains_test_str(rendered, "status: func() -> (code: u16)"), true)
+  assert_eq(parse_or_fail(rendered).to_string(), rendered)
+}
+
+///|
 test "parse error: unexpected character" {
   let msg = try {
     ignore(parse("package docs:hello; !"))

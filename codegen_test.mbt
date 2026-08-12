@@ -49,11 +49,17 @@ test "generate greeting typedefs" {
   assert_eq(contains_str(out, "  Dog"), true)
   assert_eq(contains_str(out, "  Bird(String)"), true)
   assert_eq(contains_str(out, "  Fish"), true)
-  // flags → Bool struct
-  assert_eq(contains_str(out, "pub struct Permissions {"), true)
-  assert_eq(contains_str(out, "read : Bool"), true)
-  assert_eq(contains_str(out, "write : Bool"), true)
-  assert_eq(contains_str(out, "execute : Bool"), true)
+  // flags → UInt bitmask plus named constants
+  assert_eq(contains_str(out, "pub type Permissions = UInt"), true)
+  assert_eq(contains_str(out, "permissions_read : Permissions = 1U << 0"), true)
+  assert_eq(
+    contains_str(out, "permissions_write : Permissions = 1U << 1"),
+    true,
+  )
+  assert_eq(
+    contains_str(out, "permissions_execute : Permissions = 1U << 2"),
+    true,
+  )
   // resource → opaque external type
   assert_eq(contains_str(out, "#external"), true)
   assert_eq(contains_str(out, "type Session"), true)
@@ -243,4 +249,58 @@ test "type mapping" {
   assert_eq(type_str(alias_ty("tuple<u32, bool>")), "(UInt, Bool)")
   assert_eq(type_str(alias_ty("borrow<session>")), "Session")
   assert_eq(type_str(alias_ty("own<session>")), "Session")
+  assert_eq(type_str(alias_ty("future<string>")), "WitFuture[String]")
+  assert_eq(type_str(alias_ty("future<_>")), "WitFuture[Unit]")
+  assert_eq(type_str(alias_ty("stream<u8>")), "WitStream[Byte]")
+}
+
+///|
+test "generate async scaffold handles" {
+  let src =
+    #|package test:async;
+    #|interface tasks {
+    #|  wait: func() -> future<list<u8>>;
+    #|  events: func() -> stream<string>;
+    #|}
+  let pkg = parse_or_fail(src)
+  let out = generate(pkg)
+  assert_eq(contains_str(out, "#external\ntype WitFuture[T]"), true)
+  assert_eq(contains_str(out, "#external\ntype WitStream[T]"), true)
+  assert_eq(
+    contains_str(out, "pub fn wait() -> WitFuture[@list.List[Byte]]"),
+    true,
+  )
+  assert_eq(contains_str(out, "pub fn events() -> WitStream[String]"), true)
+  assert_eq(needs_list_import(pkg), true)
+}
+
+///|
+test "nested list dependency detection" {
+  let sources = [
+    "option<list<u8>>", "result<_, list<string>>", "tuple<bool, list<u32>>", "future<list<u16>>",
+    "stream<list<u64>>",
+  ]
+  for wit_type in sources {
+    let src = "package test:nested; interface api { f: func() -> \{wit_type}; }"
+    assert_eq(needs_list_import(parse_or_fail(src)), true)
+  }
+}
+
+///|
+test "resource method list dependency detection" {
+  let src =
+    #|package test:resource-list;
+    #|interface api {
+    #|  resource reader { read: func() -> list<u8>; }
+    #|}
+  assert_eq(needs_list_import(parse_or_fail(src)), true)
+}
+
+///|
+test "named result maps to its MoonBit type" {
+  let src =
+    #|package test:named;
+    #|interface api { status: func() -> (code: u16); }
+  let out = generate(parse_or_fail(src))
+  assert_eq(contains_str(out, "pub fn status() -> UInt16"), true)
 }

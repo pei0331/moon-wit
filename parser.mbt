@@ -762,6 +762,14 @@ fn Parser::parse_type(self : Parser) -> WitType raise WitError {
           self.advance()
           Borrow(self.parse_resource_ref("borrow"))
         }
+        "future" => {
+          self.advance()
+          Future(self.parse_optional_angle_arg())
+        }
+        "stream" => {
+          self.advance()
+          Stream(self.parse_optional_angle_arg())
+        }
         _ => {
           self.advance()
           Name(text)
@@ -772,6 +780,20 @@ fn Parser::parse_type(self : Parser) -> WitType raise WitError {
         "expected a type, found \{self.peek(0).to_string()}",
       )
   }
+}
+
+///|
+fn Parser::parse_optional_angle_arg(self : Parser) -> WitType? raise WitError {
+  self.expect_punct(Lt, "'<'")
+  let value = match self.peek(0).kind {
+    Ident("_") => {
+      self.advance()
+      None
+    }
+    _ => Some(self.parse_type())
+  }
+  self.expect_punct(Gt, "'>'")
+  value
 }
 
 ///|

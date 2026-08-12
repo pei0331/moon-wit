@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "pei0331/moon-wit/examples/async"
+
+import {
+  "moonbitlang/core/list",
+}
+
+// Values
+pub fn empty() -> WitFuture[Unit]
+
+pub fn events() -> WitStream[String]
+
+pub let permissions_execute : UInt
+
+pub let permissions_read : UInt
+
+pub let permissions_write : UInt
+
+pub fn wait() -> WitFuture[@list.List[Byte]]
+
+// Errors
+
+// Types and methods
+type WitFuture[T]
+
+type WitStream[T]
+
+// Type aliases
+pub type Permissions = UInt
+
+// Traits

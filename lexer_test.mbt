@@ -33,6 +33,24 @@ test "lex version stops before use selector dot" {
 }
 
 ///|
+test "lex skips WIT attributes" {
+  let toks = tokenize("@since(version = 0.2.0) interface streams")
+  assert_eq(toks[0].to_string(), "ident(interface)")
+  assert_eq(toks[1].to_string(), "ident(streams)")
+}
+
+///|
+test "lex error: unterminated WIT attribute" {
+  let msg = try {
+    ignore(tokenize("@since(version = 0.2.0"))
+    ""
+  } catch {
+    e => e.to_string()
+  }
+  assert_eq(msg, "1:23: unterminated attribute arguments")
+}
+
+///|
 test "lex line and column tracking" {
   let toks = tokenize("a\n  b")
   assert_eq(toks[0].line, 1)

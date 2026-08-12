@@ -209,6 +209,42 @@ fn Lexer::lex_version(self : Lexer) -> String {
 }
 
 ///|
+/// Skip a WIT attribute after its leading `@`, including a balanced argument
+/// list. Attributes are accepted metadata but are not retained in the P0 AST.
+fn Lexer::skip_attribute(self : Lexer) -> Unit raise WitError {
+  ignore(self.lex_ident())
+  while self.peek_char(0) is Some(ch) && ch.is_whitespace() {
+    self.advance()
+  }
+  if self.peek_char(0) != Some('(') {
+    return
+  }
+  let mut depth = 0
+  for ;; {
+    match self.peek_char(0) {
+      None =>
+        raise WitError::make(
+          self.line,
+          self.col,
+          "unterminated attribute arguments",
+        )
+      Some('(') => {
+        depth += 1
+        self.advance()
+      }
+      Some(')') => {
+        depth -= 1
+        self.advance()
+        if depth == 0 {
+          return
+        }
+      }
+      _ => self.advance()
+    }
+  }
+}
+
+///|
 fn push_punct(
   tokens : Array[Token],
   kind : TokenKind,
@@ -278,10 +314,15 @@ pub fn tokenize(src : String) -> Array[Token] raise WitError {
         push_punct(tokens, Slash, start_line, start_col)
       }
       Some('@') => {
-        push_punct(tokens, At, start_line, start_col)
         lx.advance()
-        let v = lx.lex_version()
-        push_punct(tokens, Version(v), start_line, start_col)
+        match lx.peek_char(0) {
+          Some(ch) if is_ident_start(ch) => lx.skip_attribute()
+          _ => {
+            push_punct(tokens, At, start_line, start_col)
+            let v = lx.lex_version()
+            push_punct(tokens, Version(v), start_line, start_col)
+          }
+        }
       }
       Some('*') => {
         lx.advance()

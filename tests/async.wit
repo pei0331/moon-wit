@@ -1,0 +1,8 @@
+package example:async;
+
+interface tasks {
+  flags permissions { read, write, execute }
+  wait: func() -> future<list<u8>>;
+  empty: func() -> future<_>;
+  events: func() -> stream<string>;
+}

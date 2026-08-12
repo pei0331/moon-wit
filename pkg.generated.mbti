@@ -175,6 +175,8 @@ pub enum WitType {
   Tuple(Array[WitType])
   Own(String)
   Borrow(String)
+  Future(WitType?)
+  Stream(WitType?)
 }
 pub fn WitType::to_string(Self) -> String
 

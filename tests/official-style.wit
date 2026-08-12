@@ -1,0 +1,15 @@
+// Minimal original fixture exercising syntax used by WebAssembly/wasi-io.
+// It is not copied from the upstream specification repository.
+package example:official-style@0.1.0;
+
+@since(version = 0.1.0)
+interface streams {
+  @since(version = 0.1.0)
+  type stream-error = string;
+
+  @since(version = 0.1.0)
+  resource input-stream {
+    @since(version = 0.1.0)
+    read: func(len: u64) -> result<list<u8>, stream-error>;
+  }
+}
