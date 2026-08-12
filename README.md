@@ -69,6 +69,9 @@ world calculator {
 See `examples/calculator` for the generated package. CI regenerates and builds
 all checked-in examples.
 
+Resource declarations with constructors, static functions and methods are
+also scaffolded. See `examples/resource` for the generated opaque handle API.
+
 ## How it maps WIT to MoonBit
 
 `record` → `struct`, `variant` → payload `enum`, `enum` → unit `enum`,

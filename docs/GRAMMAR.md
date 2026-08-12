@@ -36,6 +36,10 @@ case       ::= ident ['(' type ')']
 enum       ::= 'enum' name '{' (ident [','])+ '}'
 flags      ::= 'flags' name '{' (ident [','])+ '}'
 resource   ::= 'resource' name ';'
+             | 'resource' name '{' resource-item* '}'
+resource-item ::= 'constructor' '(' [param (',' param)*] ')' ';'
+                | 'static' func ';'
+                | func ';'
 type-alias ::= 'type' name '=' type ';'
 
 func       ::= ident ':' 'func' '(' [param (',' param)*] ')' ['->' results] [';']
@@ -94,6 +98,7 @@ their leading `%` in the AST and rendered WIT.
 | `enum tone { formal, casual }` | `pub enum Tone { Formal, Casual }` |
 | `flags permissions { read, … }` | `pub struct Permissions { read : Bool, … }` (P0 placeholder) |
 | `resource session;` | `#external type Session` (opaque) |
+| `resource counter { ... }` | opaque type plus `counter_new`, `counter_max` and `counter_increment` stubs |
 | `type id = u64;` | `pub type Id = UInt64` |
 | `greet: func(name: string) -> string` | `pub fn greet(name : String) -> String { abort("stub: greet") }` |
 

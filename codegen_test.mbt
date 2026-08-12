@@ -162,6 +162,21 @@ test "generate direct world functions" {
 }
 
 ///|
+test "generate resource functions" {
+  let out = generate(parse_or_fail(resource_wit))
+  assert_eq(contains_str(out, "#external\ntype Counter"), true)
+  assert_eq(
+    contains_str(out, "pub fn counter_new(initial : UInt) -> Counter"),
+    true,
+  )
+  assert_eq(contains_str(out, "pub fn counter_max() -> UInt"), true)
+  assert_eq(
+    contains_str(out, "pub fn Counter::increment(amount : UInt) -> UInt"),
+    true,
+  )
+}
+
+///|
 /// Parse `type t = <wit>;` and return the alias's referenced type. Test
 /// binaries see enum constructors as read-only in this toolchain, so build
 /// `WitType` values through the parser instead of writing constructors.

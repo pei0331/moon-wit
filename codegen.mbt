@@ -147,7 +147,28 @@ fn generate_typedef(def : TypeDef) -> String {
       }
       out + "}\n"
     }
-    Resource => "///|\n#external\ntype \{tn}\n"
+    Resource(funcs) => {
+      let mut out = "///|\n#external\ntype \{tn}\n"
+      for f in funcs {
+        let prefix = match f.kind {
+          Constructor => "new"
+          Static => field_name(f.sig.name)
+          Method => field_name(f.sig.name)
+        }
+        let params = f.sig.params
+        let results = match f.kind {
+          Constructor => [Unnamed(Name(def.name))]
+          _ => f.sig.results
+        }
+        let generated_name = match f.kind {
+          Method => "\{type_name(def.name)}::\{field_name(f.sig.name)}"
+          _ => "\{field_name(def.name)}_\{prefix}"
+        }
+        let sig : FuncSig = { name: generated_name, params, results }
+        out = out + "\n" + generate_func(sig)
+      }
+      out
+    }
     Alias(t) => "///|\npub type \{tn} = \{type_str(t)}\n"
   }
 }
@@ -420,7 +441,7 @@ fn typedef_uses_list(def : TypeDef) -> Bool {
       false
     }
     Alias(t) => type_uses_list(t)
-    Enum(_) | Flags(_) | Resource => false
+    Enum(_) | Flags(_) | Resource(_) => false
   }
 }
 

@@ -95,6 +95,19 @@ pub struct FuncSig {
 }
 
 ///|
+pub enum ResourceFuncKind {
+  Constructor
+  Static
+  Method
+}
+
+///|
+pub struct ResourceFunc {
+  kind : ResourceFuncKind
+  sig : FuncSig
+}
+
+///|
 /// The kind of a named type definition.
 pub enum TypeDefKind {
   /// `record` — a struct of named fields.
@@ -106,7 +119,7 @@ pub enum TypeDefKind {
   /// `flags` — a set of boolean flags.
   Flags(Array[String])
   /// `resource` — an opaque handle type.
-  Resource
+  Resource(Array[ResourceFunc])
   /// `type X = <type>` — an alias.
   Alias(WitType)
 }
@@ -321,7 +334,21 @@ pub fn TypeDef::to_string(self : TypeDef) -> String {
       }
       s + "}"
     }
-    Resource => "resource \{self.name};"
+    Resource(funcs) => {
+      if funcs.length() == 0 {
+        return "resource \{self.name};"
+      }
+      let mut s = "resource \{self.name} {\n"
+      for f in funcs {
+        let prefix = match f.kind {
+          Constructor => "constructor\{f.sig.signature_to_string()}"
+          Static => "static \{f.sig.to_string()}"
+          Method => f.sig.to_string()
+        }
+        s = s + "  \{prefix};\n"
+      }
+      s + "}"
+    }
     Alias(t) => "type \{self.name} = \{t.to_string()};"
   }
 }
@@ -333,7 +360,12 @@ pub fn FuncSig::to_string(self : FuncSig) -> String {
 
 ///|
 fn FuncSig::type_to_string(self : FuncSig) -> String {
-  let mut s = "func("
+  "func\{self.signature_to_string()}"
+}
+
+///|
+fn FuncSig::signature_to_string(self : FuncSig) -> String {
+  let mut s = "("
   s = s + join_strings(self.params.map(fn(p) { p.to_string() }), ", ")
   s = s + ")"
   if self.results.length() != 0 {

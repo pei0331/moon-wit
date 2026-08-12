@@ -448,8 +448,31 @@ fn Parser::parse_flags(self : Parser) -> TypeDef raise WitError {
 fn Parser::parse_resource(self : Parser) -> TypeDef raise WitError {
   self.expect_kw("resource")
   let name = self.expect_ident()
-  self.expect_punct(Semi, "';'")
-  { name, kind: Resource }
+  if self.peek(0).kind == Semi {
+    self.advance()
+    return { name, kind: Resource(Array::new()) }
+  }
+  self.expect_punct(LBrace, "'{'")
+  let funcs : Array[ResourceFunc] = Array::new()
+  while self.peek(0).kind != RBrace {
+    let kind = if self.check_kw("constructor") {
+      self.advance()
+      Constructor
+    } else if self.check_kw("static") {
+      self.advance()
+      Static
+    } else {
+      Method
+    }
+    let sig = if kind is Constructor {
+      self.parse_func_signature("new")
+    } else {
+      self.parse_func()
+    }
+    funcs.push({ kind, sig })
+  }
+  self.expect_punct(RBrace, "'}'")
+  { name, kind: Resource(funcs) }
 }
 
 ///|
@@ -465,6 +488,14 @@ fn Parser::parse_func_after_name(
   name : String,
 ) -> FuncSig raise WitError {
   self.expect_kw("func")
+  self.parse_func_signature(name)
+}
+
+///|
+fn Parser::parse_func_signature(
+  self : Parser,
+  name : String,
+) -> FuncSig raise WitError {
   self.expect_punct(LParen, "'('")
   let params : Array[Field] = Array::new()
   while self.peek(0).kind != RParen {

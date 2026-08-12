@@ -1,0 +1,17 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "pei0331/moon-wit/examples/resource"
+
+// Values
+pub fn counter_max() -> UInt
+
+pub fn counter_new(UInt) -> Counter
+
+// Errors
+
+// Types and methods
+type Counter
+pub fn Counter::increment(UInt) -> UInt
+
+// Type aliases
+
+// Traits

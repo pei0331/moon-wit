@@ -19,6 +19,8 @@ scaffold generator.
   and list-dependency detection.
 - Generated no-result functions use an explicit `Unit` return type, and WIT
   lists use the package-qualified `@list.List[T]` MoonBit type.
+- Resource bodies now parse constructors, static functions and methods, and
+  generate prefixed opaque-handle API stubs.
 - Full AST (`ast.mbt`) with a WIT round-trip renderer.
 - Code generator (`codegen.mbt`): `record`→`struct`, `variant`→payload `enum`,
   `enum`→unit `enum`, `flags`→`Bool`-field `struct`, `resource`→`#external

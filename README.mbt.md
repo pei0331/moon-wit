@@ -24,7 +24,8 @@ let moon_pkg = @moon_wit.generate_moon_pkg(
 
 `examples/hello`, `examples/escaped` and `examples/calculator` are checked-in
 CLI outputs compiled by CI. They cover inline interfaces, escaped identifiers
-and direct world-level function imports/exports.
+direct world-level function imports/exports and resource constructors, static
+functions and methods.
 
 ## Public API
 

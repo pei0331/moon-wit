@@ -69,6 +69,17 @@ let calculator_wit : String =
   #|}
 
 ///|
+let resource_wit : String =
+  #|package example:resource;
+  #|interface handles {
+  #|  resource counter {
+  #|    constructor(initial: u32);
+  #|    static max: func() -> u32;
+  #|    increment: func(amount: u32) -> u32;
+  #|  }
+  #|}
+
+///|
 fn parse_or_fail(src : String) -> WitPackage {
   parse(src) catch {
     e => abort("parse failed: \{e.to_string()}")
@@ -376,6 +387,32 @@ test "render direct world functions round trip" {
     contains_test_str(rendered, "export add: func(a: s32, b: s32) -> s32;"),
     true,
   )
+  assert_eq(parse_or_fail(rendered).to_string(), rendered)
+}
+
+///|
+test "parse resource functions" {
+  let p = parse_or_fail(resource_wit)
+  match p.items[0] {
+    Interface(iface) =>
+      match iface.items[0] {
+        Type(def) =>
+          match def.kind {
+            Resource(funcs) => {
+              assert_eq(funcs.length(), 3)
+              assert_true(funcs[0].kind is Constructor)
+              assert_true(funcs[1].kind is Static)
+              assert_true(funcs[2].kind is Method)
+              assert_eq(funcs[0].sig.results.length(), 0)
+              assert_eq(funcs[2].sig.name, "increment")
+            }
+            _ => abort("expected resource")
+          }
+        _ => abort("expected type")
+      }
+    _ => abort("expected interface")
+  }
+  let rendered = parse_or_fail(resource_wit).to_string()
   assert_eq(parse_or_fail(rendered).to_string(), rendered)
 }
 

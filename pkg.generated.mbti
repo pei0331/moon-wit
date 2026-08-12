@@ -73,6 +73,17 @@ pub enum InterfaceItem {
 }
 pub fn InterfaceItem::to_string(Self) -> String
 
+pub struct ResourceFunc {
+  kind : ResourceFuncKind
+  sig : FuncSig
+}
+
+pub enum ResourceFuncKind {
+  Constructor
+  Static
+  Method
+}
+
 pub struct Token {
   kind : TokenKind
   line : Int
@@ -112,7 +123,7 @@ pub enum TypeDefKind {
   Variant(Array[Case])
   Enum(Array[String])
   Flags(Array[String])
-  Resource
+  Resource(Array[ResourceFunc])
   Alias(WitType)
 }
 

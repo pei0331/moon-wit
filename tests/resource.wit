@@ -1,0 +1,9 @@
+package example:resource;
+
+interface handles {
+  resource counter {
+    constructor(initial: u32);
+    static max: func() -> u32;
+    increment: func(amount: u32) -> u32;
+  }
+}
